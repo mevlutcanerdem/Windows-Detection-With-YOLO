@@ -17,6 +17,14 @@ cap = cv.VideoCapture(video_path)
 screen_width = 1280
 screen_height = 720
 
+#Get the original video frame rate(default : 30  if unknown)
+fps = int(cap.get(cv.CAP_PROP_FPS)) if cap.get(cv.CAP_PROP_FPS) > 0 else 30
+
+#define codec and create a videoWriter object to save output
+output_path = "output.mp4"
+fourcc = cv.VideoWriter_fourcc(*'mp4v')
+out = cv.VideoWriter(output_path,fourcc,fps,(screen_width,screen_height))
+
 # Process the video frame by frame
 while cap.isOpened():
     ret, frame = cap.read()
@@ -43,7 +51,8 @@ while cap.isOpened():
             # Display class name if it exists in the dictionary
             if int(ID) in class_name:
                 cv.putText(frame, class_name[int(ID)], (x1, y1 + 20), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
-
+    #Write the frame as output
+    out.write(frame)
     # Show the processed video frame
     cv.imshow("Video", frame)
 
@@ -53,4 +62,5 @@ while cap.isOpened():
 
 # Release video capture and close all OpenCV windows
 cap.release()
+out.release()
 cv.destroyAllWindows()
